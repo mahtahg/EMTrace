@@ -1,6 +1,6 @@
 """Nucleus segmentation inputs.
 
-MesoGraph-FM uses CellViT++ (Hörst et al., 2025) for nucleus instance
+EMTrace uses CellViT++ (Hörst et al., 2025) for nucleus instance
 segmentation and classification. CellViT++ is run with its own CLI
 (``cellvit/detect_cells.py ... --graph``) because it manages its own
 checkpoints and WSI handling; this module reads its outputs.

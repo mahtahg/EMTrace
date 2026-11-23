@@ -1,7 +1,7 @@
 """Cell-graph construction (sparse; coordinates in µm).
 
 Graphs keep the *raw* feature blocks (``blk_<name>``); the fold-specific
-:class:`~mesograph_fm.graph.normalize.FoldNormalizer` turns them into ``x``.
+:class:`~emtrace.graph.normalize.FoldNormalizer` turns them into ``x``.
 This keeps normalisation statistics out of the test fold (the original code
 fitted the scaler on every core, test cores included).
 """

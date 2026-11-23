@@ -1,13 +1,15 @@
-# MesoGraph-FM
+# EMTrace
 
-Cell-graph learning for mesothelioma subtyping (epithelioid / biphasic /
-sarcomatoid) using foundation-model nucleus features. This is a full
-refactor and extension of [MesoGraph](https://github.com/measty/mesograph)
-(Eastwood et al.).
+**EMTrace** places every tumour cell on the epithelioid→sarcomatoid
+(epithelial–mesenchymal) continuum and measures how much of each core is
+sarcomatoid. It is a new cell-graph algorithm for mesothelioma subtyping
+(epithelioid / biphasic / sarcomatoid) built on foundation-model nucleus
+features. The original cell-graph backbone and ranking loss come from
+[MesoGraph](https://github.com/measty/mesograph) (Eastwood et al.).
 
 ## What changed from MesoGraph
 
-| | MesoGraph | MesoGraph-FM |
+| | MesoGraph | EMTrace |
 |---|---|---|
 | Nucleus segmentation | QuPath | **CellViT++** (masks, cell types, cell tokens) |
 | Deep features | ResNet, 512-d | **H-optimus-1** ViT-g/14, 1536-d, mask-pooled patch tokens per nucleus, plus tile context |
@@ -74,11 +76,11 @@ and resampling is handled automatically.
 ## Run
 
 ```bash
-mgfm demo --work-dir runs/demo                 # synthetic data, no weights needed
-mgfm extract --config configs/example.yaml     # features -> work_dir/features
-mgfm graphs  --config configs/example.yaml     # graphs   -> work_dir/graphs
-mgfm train   --config configs/example.yaml     # CV training + A/C/G
-mgfm explain --config configs/example.yaml --fold rep0_fold0
+emtrace demo --work-dir runs/demo                 # synthetic data, no weights needed
+emtrace extract --config configs/example.yaml     # features -> work_dir/features
+emtrace graphs  --config configs/example.yaml     # graphs   -> work_dir/graphs
+emtrace train   --config configs/example.yaml     # CV training + A/C/G
+emtrace explain --config configs/example.yaml --fold rep0_fold0
 ```
 
 Outputs in `work_dir`:

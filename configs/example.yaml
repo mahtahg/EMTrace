@@ -1,9 +1,9 @@
 # Example config for real TMA cores. Only overrides of DEFAULTS
-# (mesograph_fm/config.py) are needed; every option is documented there.
+# (emtrace/config.py) are needed; every option is documented there.
 seed: 0
 paths:
   dataset_csv: data/meso_cores.csv   # core_id,label(E/B/S),group(slide or patient),image,mpp,cellvit_json[,cellvit_graph,offset_x,offset_y]
-  work_dir: runs/meso_hopt1
+  work_dir: runs/emtrace
   external_csv: data/mesobank_cores.csv   # optional external cohort
 
 extract:

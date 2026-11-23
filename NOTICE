@@ -5,8 +5,8 @@ This project is derived from MesoGraph
   (https://creativecommons.org/licenses/by-nc/4.0/).
 
 Portions adapted from MesoGraph (model architecture in
-mesograph_fm/models/mesograph.py and the pairwise ranking loss in
-mesograph_fm/models/losses.py) remain under CC BY-NC 4.0. Changes were made:
+emtrace/models/mesograph.py and the pairwise ranking loss in
+emtrace/models/losses.py) remain under CC BY-NC 4.0. Changes were made:
 the code was refactored, vectorised and extended.
 
 Third-party models used at runtime (not distributed here):

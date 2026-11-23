@@ -17,7 +17,7 @@ from ..config import resolve_device
 from ..graph.build import load_graphs
 from ..graph.normalize import FoldNormalizer
 from ..models.losses import pairwise_ranking_loss, proportion_loss, sarcomatoid_assignment, sarcomatoid_fraction
-from ..models.mesograph import MesoGraphFM
+from ..models.emtrace_net import EMTraceNet
 from ..models.pretrain import pretrain_encoder
 from ..models.pseudotime import PrincipalTreePseudotime, core_summary
 from .metrics import bootstrap_ci, core_metrics, selection_metric
@@ -82,7 +82,7 @@ class Trainer:
             q = sarcomatoid_assignment(out["logits"], self.cfg["loss"]["proportion"]["temperature"])
             w = d.tumour_w if self.cfg["loss"]["proportion"]["tumour_weighted"] else None
             f = sarcomatoid_fraction(q, d.batch, w, d.num_graphs)
-            score = MesoGraphFM.core_score(out["core"])
+            score = EMTraceNet.core_score(out["core"])
             for gi in range(d.num_graphs):
                 rows.append({
                     "core_id": d.core_id[gi], "y": int(d.y[gi]),
@@ -112,7 +112,7 @@ class Trainer:
         cfg = self.cfg
         set_seed(seed)
         edge_dim = train[0].edge_attr.shape[1] if getattr(train[0], "edge_attr", None) is not None else None
-        model = MesoGraphFM(in_dim, cfg["model"], edge_dim).to(self.device)
+        model = EMTraceNet(in_dim, cfg["model"], edge_dim).to(self.device)
         pre_hist = []
         if cfg["pretrain"]["enabled"]:
             pre_hist = pretrain_encoder(model.encoder, list(train) + list(extra_unlabelled or []), in_dim,

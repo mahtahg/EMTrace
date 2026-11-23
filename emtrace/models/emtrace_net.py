@@ -1,4 +1,4 @@
-"""MesoGraph-FM model.
+"""EMTrace model (EMTraceNet).
 
 Architecture follows MesoGraph (Eastwood et al.): an MLP on node features,
 then EdgeConv message passing, with a linear head on every layer whose
@@ -60,7 +60,7 @@ class CellGraphEncoder(nn.Module):
         return hs
 
 
-class MesoGraphFM(nn.Module):
+class EMTraceNet(nn.Module):
     def __init__(self, in_dim: int, mcfg: dict, edge_dim: int | None = 4):
         super().__init__()
         self.encoder = CellGraphEncoder(in_dim, mcfg["hidden"], mcfg["conv"], mcfg["dropout"], edge_dim)

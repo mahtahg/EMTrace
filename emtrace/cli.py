@@ -1,4 +1,4 @@
-"""Command-line interface: ``mgfm <command> --config cfg.yaml``.
+"""Command-line interface: ``emtrace <command> --config cfg.yaml``.
 
 Commands
 --------
@@ -61,7 +61,7 @@ def cmd_train(a):
 def cmd_explain(a):
     from .explain.attribution import explain_cores
     from .graph.build import load_graphs
-    from .models.mesograph import MesoGraphFM
+    from .models.emtrace_net import EMTraceNet
 
     cfg = _cfg(a)
     fdir = Path(cfg["paths"]["work_dir"]) / a.fold
@@ -70,7 +70,7 @@ def cmd_explain(a):
     raw = load_graphs(cfg["paths"]["graphs_dir"])
     graphs = [norm.transform(g) for g in raw]
     ed = graphs[0].edge_attr.shape[1] if getattr(graphs[0], "edge_attr", None) is not None else None
-    model = MesoGraphFM(norm.dim, cfg["model"], ed)
+    model = EMTraceNet(norm.dim, cfg["model"], ed)
     dev = resolve_device(cfg)
     model.load_state_dict(torch.load(fdir / "model.pt", map_location=dev))
     model.to(dev)
@@ -103,7 +103,7 @@ def cmd_demo(a):
 
 def main(argv=None):
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    p = argparse.ArgumentParser("mgfm")
+    p = argparse.ArgumentParser("emtrace")
     sub = p.add_subparsers(dest="cmd", required=True)
     for name, fn in [("extract", cmd_extract), ("graphs", cmd_graphs), ("train", cmd_train),
                      ("explain", cmd_explain), ("demo", cmd_demo)]:

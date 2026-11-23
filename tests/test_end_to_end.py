@@ -8,12 +8,12 @@ import pandas as pd
 import pytest
 import torch
 
-from mesograph_fm.config import load_config
-from mesograph_fm.extract.pipeline import extract_dataset
-from mesograph_fm.extract.synthetic import make_dataset
-from mesograph_fm.graph.build import build_dataset, load_graphs
-from mesograph_fm.graph.normalize import FoldNormalizer
-from mesograph_fm.train.engine import Trainer
+from emtrace.config import load_config
+from emtrace.extract.pipeline import extract_dataset
+from emtrace.extract.synthetic import make_dataset
+from emtrace.graph.build import build_dataset, load_graphs
+from emtrace.graph.normalize import FoldNormalizer
+from emtrace.train.engine import Trainer
 
 
 @pytest.fixture(scope="module")
@@ -89,14 +89,14 @@ def test_toggles_off(run, tmp_path):
 def test_explain(run):
     import pickle
 
-    from mesograph_fm.explain.attribution import explain_cores
-    from mesograph_fm.models.mesograph import MesoGraphFM
+    from emtrace.explain.attribution import explain_cores
+    from emtrace.models.emtrace_net import EMTraceNet
 
     cfg, wd = run
     fdir = wd / "rep0_fold0"
     norm = pickle.load(open(fdir / "normalizer.pkl", "rb"))
     gs = [norm.transform(g) for g in load_graphs(wd / "graphs")[:3]]
-    m = MesoGraphFM(norm.dim, cfg["model"], gs[0].edge_attr.shape[1])
+    m = EMTraceNet(norm.dim, cfg["model"], gs[0].edge_attr.shape[1])
     m.load_state_dict(torch.load(fdir / "model.pt"))
     feats, blocks = explain_cores(m, gs, norm, steps=4)
     assert feats.shape == (3, norm.dim)
@@ -105,9 +105,9 @@ def test_explain(run):
 
 def test_tiny_core_does_not_crash(run, tmp_path):
     """A core with a single nucleus must flow through normalise/predict/pseudotime."""
-    from mesograph_fm.extract.synthetic import make_core
-    from mesograph_fm.extract.pipeline import extract_core
-    from mesograph_fm.graph.build import build_graph
+    from emtrace.extract.synthetic import make_core
+    from emtrace.extract.pipeline import extract_core
+    from emtrace.graph.build import build_graph
     from PIL import Image
 
     cfg, wd = run
@@ -118,14 +118,14 @@ def test_tiny_core_does_not_crash(run, tmp_path):
     c = copy.deepcopy(cfg)
     c["extract"]["segmenter"] = "label_map"
     res = extract_core({"image": str(tmp_path / "t.png"), "mpp": 0.5, "mask": str(tmp_path / "t_mask.npy")}, c,
-                       __import__("mesograph_fm.extract.foundation", fromlist=["x"]).DummyEncoder(),
-                       __import__("mesograph_fm.extract.concepts", fromlist=["x"]).DummyScorer(c["extract"]["concepts"]["prompts"], "cpu"))
+                       __import__("emtrace.extract.foundation", fromlist=["x"]).DummyEncoder(),
+                       __import__("emtrace.extract.concepts", fromlist=["x"]).DummyScorer(c["extract"]["concepts"]["prompts"], "cpu"))
     np.savez(tmp_path / "t.npz", **res)
     g = build_graph(tmp_path / "t.npz", "E", "tiny", "g", c)
     gs = load_graphs(wd / "graphs")
     norm = FoldNormalizer(c).fit(gs)
     tr = Trainer(c)
-    from mesograph_fm.models.mesograph import MesoGraphFM
-    m = MesoGraphFM(norm.dim, c["model"], 4)
+    from emtrace.models.emtrace_net import EMTraceNet
+    m = EMTraceNet(norm.dim, c["model"], 4)
     df, nodes = tr.predict(m, [norm.transform(g)], keep_nodes=True)
     assert len(df) == 1 and np.isfinite(df.score).all()

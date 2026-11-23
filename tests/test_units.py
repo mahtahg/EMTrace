@@ -2,15 +2,15 @@ import numpy as np
 import pytest
 import torch
 
-from mesograph_fm.config import load_config
-from mesograph_fm.extract import handcrafted as hc
-from mesograph_fm.extract.foundation import DummyEncoder, mask_pooled_tokens
-from mesograph_fm.extract.segmentation import read_cellvit_json
-from mesograph_fm.extract.synthetic import labels_to_cellvit_json, make_core
-from mesograph_fm.graph.build import radius_edges
-from mesograph_fm.models.losses import pairwise_ranking_loss, proportion_loss
-from mesograph_fm.models.mesograph import MesoGraphFM
-from mesograph_fm.models.pseudotime import PrincipalTreePseudotime, core_summary
+from emtrace.config import load_config
+from emtrace.extract import handcrafted as hc
+from emtrace.extract.foundation import DummyEncoder, mask_pooled_tokens
+from emtrace.extract.segmentation import read_cellvit_json
+from emtrace.extract.synthetic import labels_to_cellvit_json, make_core
+from emtrace.graph.build import radius_edges
+from emtrace.models.losses import pairwise_ranking_loss, proportion_loss
+from emtrace.models.emtrace_net import EMTraceNet
+from emtrace.models.pseudotime import PrincipalTreePseudotime, core_summary
 
 
 def original_ranking_loss(output, y, margin=0.8):
@@ -119,7 +119,7 @@ def test_radius_edges_symmetric_and_bounded():
 def test_model_forward_backward(conv, pool):
     cfg = load_config()["model"]
     cfg = dict(cfg, conv=conv, pooling=pool)
-    m = MesoGraphFM(12, cfg, edge_dim=4)
+    m = EMTraceNet(12, cfg, edge_dim=4)
     x = torch.randn(30, 12)
     ei = torch.randint(0, 30, (2, 80))
     ea = torch.randn(80, 4)

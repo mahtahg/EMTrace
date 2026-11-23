@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mesograph-fm"
+name = "emtrace"
 version = "0.1.0"
 description = "Foundation-model cell graphs for mesothelioma subtyping (refactor of MesoGraph)"
 readme = "README.md"
@@ -19,10 +19,10 @@ concepts = ["conch @ git+https://github.com/mahmoodlab/CONCH.git"]
 dev = ["pytest"]
 
 [project.scripts]
-mgfm = "mesograph_fm.cli:main"
+emtrace = "emtrace.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["mesograph_fm*"]
+include = ["emtrace*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

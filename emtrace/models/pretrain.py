@@ -18,7 +18,7 @@ import torch.nn.functional as F
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import EdgeConv
 
-from .mesograph import CellGraphEncoder
+from .emtrace_net import CellGraphEncoder
 
 log = logging.getLogger(__name__)
 

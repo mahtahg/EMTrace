@@ -11,10 +11,10 @@ import numpy as np
 import pandas as pd
 import torch
 
-from ..models.mesograph import MesoGraphFM
+from ..models.emtrace_net import EMTraceNet
 
 
-def integrated_gradients(model: MesoGraphFM, d, steps: int = 32, device="cpu") -> np.ndarray:
+def integrated_gradients(model: EMTraceNet, d, steps: int = 32, device="cpu") -> np.ndarray:
     """Return (N, F) attributions for one graph; baseline = zeros (= training median)."""
     model.eval()
     d = d.to(device)
@@ -25,7 +25,7 @@ def integrated_gradients(model: MesoGraphFM, d, steps: int = 32, device="cpu") -
     for a in torch.linspace(1.0 / steps, 1.0, steps, device=device):
         xi = (a * x).detach().requires_grad_(True)
         out = model(xi, d.edge_index, batch, ea)
-        s = MesoGraphFM.core_score(out["core"]).sum()
+        s = EMTraceNet.core_score(out["core"]).sum()
         (g,) = torch.autograd.grad(s, xi)
         total += g
     return (x * total / steps).detach().cpu().numpy()
