@@ -4,7 +4,7 @@ Commands
 --------
 extract   segment-file reading + per-nucleus features -> <work_dir>/features
 graphs    build cell graphs                          -> <work_dir>/graphs
-train     cross-validated training (+ pretraining G, proportion loss A, pseudotime C)
+train     cross-validated training (+ pretraining, proportion loss, pseudotime)
 explain   integrated gradients + GNNExplainer for a trained fold
 demo      make a synthetic dataset and run the full pipeline (no weights needed)
 """

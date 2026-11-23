@@ -7,7 +7,7 @@ core-conditioned threshold maps them through a sigmoid and they are pooled
 into core scores. Changes: vectorised threshold (no per-graph Python loop),
 optional GATv2 with edge features, optional attention pooling, no virtual
 core node (the core summary is a pooled mean of the input features), and the
-node encoder is a separate module so it can be self-supervised (novelty G).
+node encoder is a separate module so it can be self-supervised.
 """
 from __future__ import annotations
 

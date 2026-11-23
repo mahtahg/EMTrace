@@ -1,4 +1,4 @@
-"""Novelty F: pathologist-concept scores per nucleus.
+"""Pathologist-concept scores per nucleus.
 
 A vision-language pathology model (CONCH, Lu et al. 2024) scores a small
 crop around every nucleus against text prompts for concepts pathologists use

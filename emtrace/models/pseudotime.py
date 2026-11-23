@@ -1,4 +1,4 @@
-"""Novelty C: epithelioid -> sarcomatoid cell pseudotime.
+"""Epithelioid -> sarcomatoid cell pseudotime.
 
 A DDRTree-style principal tree is fitted to the learned cell embeddings of
 training-fold tumour cells: PCA -> k-means centroids -> minimum spanning tree

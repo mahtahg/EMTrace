@@ -4,8 +4,7 @@
 (epithelial–mesenchymal) continuum and measures how much of each core is
 sarcomatoid. It is a new cell-graph algorithm for mesothelioma subtyping
 (epithelioid / biphasic / sarcomatoid) built on foundation-model nucleus
-features. The original cell-graph backbone and ranking loss come from
-[MesoGraph](https://github.com/measty/mesograph) (Eastwood et al.).
+features.
 
 ## What changed from MesoGraph
 
@@ -16,28 +15,28 @@ features. The original cell-graph backbone and ranking loss come from
 | Handcrafted features | QuPath measurements | ~250 from CellViT masks: shape, Fourier, Hu, H/E/OD intensity in nucleus + ring, 78 Haralick, cell types, neighbourhood |
 | Normalisation | fitted on **all** cores (test leakage) | fitted per training fold; PCA on deep blocks |
 | Graph | dense adjacency, unit-ambiguous radius | sparse radius graph in µm, edge features |
-| Loss | pairwise ranking (margin 0.8 train / 1.0 eval) | vectorised ranking with one margin **+ A** |
+| Loss | pairwise ranking (margin 0.8 train / 1.0 eval) | vectorised ranking with one margin **+ WHO-proportion constraint** |
 | Explanations | GNNExplainer | GNNExplainer **and** integrated gradients, per feature block, plus per-cell and per-edge maps |
 | Evaluation | single run | repeats, group-aware splits, bootstrap CIs |
 
 ### Novel components (each toggleable in the config)
 
-- **A. WHO-proportion constraint** (`loss.proportion`). Each cell gets a
+- **WHO-proportion constraint** (`loss.proportion`). Each cell gets a
   soft sarcomatoid assignment. The core's tumour-cell-weighted sarcomatoid
   fraction must satisfy E ≤ 10%, S ≥ 90%, and B with both components ≥ 10%.
   This mirrors the WHO definition of biphasic. A graph-smoothness term
   favours contiguous components, so the model outputs a **sarcomatoid %
   per core** (`sarcomatoid_pct`).
-- **C. Epithelioid→sarcomatoid pseudotime** (`pseudotime`). A DDRTree-style
+- **Epithelioid→sarcomatoid pseudotime** (`pseudotime`). A DDRTree-style
   principal tree is fitted to the learned tumour-cell embeddings of the
   training fold and rooted at the most epithelioid cluster. Each cell gets a
   position on the E→S continuum; each core gets a histogram, mean, median
   and bimodality coefficient of those positions.
-- **F. Pathologist-concept features** (`extract.concepts`). CONCH scores a
+- **Pathologist-concept features** (`extract.concepts`). CONCH scores a
   crop around each nucleus against prompts for spindle shape, pleomorphism,
   nucleoli, mitoses, necrosis, stroma type and more. These form a
   human-readable feature block.
-- **G. Self-supervised graph pretraining** (`pretrain`, **on by default**).
+- **Self-supervised graph pretraining** (`pretrain`, **on by default**).
   GraphMAE-style masked-feature reconstruction pretrains the cell encoder on
   the training fold's cores (and optional extra unlabelled cores) before
   supervised training.
@@ -46,7 +45,7 @@ features. The original cell-graph backbone and ranking loss come from
 
 ```bash
 pip install -e .                 # core
-pip install -e ".[concepts]"     # + CONCH for novelty F
+pip install -e ".[concepts]"     # + CONCH for concept features
 ```
 
 H-optimus-1 (Bioptimus, CC BY-NC-ND 4.0) and CONCH (MahmoodLab) are gated on
@@ -79,7 +78,7 @@ and resampling is handled automatically.
 emtrace demo --work-dir runs/demo                 # synthetic data, no weights needed
 emtrace extract --config configs/example.yaml     # features -> work_dir/features
 emtrace graphs  --config configs/example.yaml     # graphs   -> work_dir/graphs
-emtrace train   --config configs/example.yaml     # CV training + A/C/G
+emtrace train   --config configs/example.yaml     # CV training (pretraining, proportion loss, pseudotime)
 emtrace explain --config configs/example.yaml --fold rep0_fold0   # --method ig | gnnexplainer | ig,gnnexplainer
 ```
 

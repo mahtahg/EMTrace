@@ -3,7 +3,7 @@
 * :func:`pairwise_ranking_loss` - MesoGraph's pairwise hinge ranking loss
   (E < B < S), vectorised; the same margin is used in training and evaluation
   (the original used 0.8 vs 1.0).
-* :func:`proportion_loss` - Novelty A. Each cell gets a soft sarcomatoid
+* :func:`proportion_loss` - WHO-proportion constraint. Each cell gets a soft sarcomatoid
   assignment q = sigmoid((s_S - s_E) / T). The core's sarcomatoid fraction f
   is the tumour-cell-weighted mean of q (WHO proportions refer to tumour
   cells). With threshold tau (WHO: 10%) the loss enforces

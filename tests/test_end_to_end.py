@@ -1,5 +1,5 @@
-"""Full pipeline on synthetic cores: extract -> graphs -> pretrain G -> train (A)
--> pseudotime C -> explain, with concepts F on. Uses dummy encoder/scorer
+"""Full pipeline on synthetic cores: extract -> graphs -> pretraining -> train (proportion loss)
+-> pseudotime -> explain, with concept features on. Uses dummy encoder/scorer
 so no gated weights are needed."""
 import json
 
@@ -63,7 +63,7 @@ def test_train_full_pipeline(run):
     assert preds.sarcomatoid_pct.between(0, 100).all()
     assert (wd / "metrics.json").exists() and (wd / "rep0_fold0" / "model.pt").exists()
     hist = json.load(open(wd / "rep0_fold0" / "history.json"))
-    assert len(hist["pretrain"]) == 3  # G on
+    assert len(hist["pretrain"]) == 3  # pretraining on
     # synthetic task is easy: spindle cores should score higher than round ones
     m = summary["rep0"]["auc_E_vs_S"]["value"]
     assert m > 0.7, m

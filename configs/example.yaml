@@ -9,12 +9,12 @@ paths:
 extract:
   segmenter: cellvit_files          # read CellViT++ outputs
   encoder: {name: hoptimus1, mpp: 0.5, stride: 112}
-  concepts: {enabled: true, backend: conch}    # novelty F
+  concepts: {enabled: true, backend: conch}    # pathologist-concept features
 
-pretrain: {enabled: true, epochs: 50}          # novelty G (set false to disable)
+pretrain: {enabled: true, epochs: 50}          # self-supervised pretraining (set false to disable)
 loss:
-  proportion: {enabled: true, threshold: 0.10} # novelty A
-pseudotime: {enabled: true}                    # novelty C
+  proportion: {enabled: true, threshold: 0.10} # WHO-proportion constraint
+pseudotime: {enabled: true}                    # E->S pseudotime
 
 train:
   split: group        # leave-one-slide-out; use `external` to train on dataset_csv and test on external_csv

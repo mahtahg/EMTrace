@@ -1,4 +1,4 @@
-"""Novelty G: self-supervised masked-feature pretraining of the cell encoder.
+"""Self-supervised masked-feature pretraining of the cell encoder.
 
 GraphMAE-style (Hou et al., 2022): a random subset of nodes has its features
 replaced by a learnable mask token; the encoder embeds the graph; masked

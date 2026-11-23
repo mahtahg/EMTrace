@@ -49,7 +49,7 @@ DEFAULTS: dict[str, Any] = {
             "neighbourhood": True,
             "neighbourhood_radii_um": [25.0, 50.0, 100.0],
         },
-        "concepts": {  # Novelty F
+        "concepts": {  # pathologist-concept features
             "enabled": True,
             "backend": "conch",  # conch | dummy
             "crop_um": 32.0,
@@ -89,7 +89,7 @@ DEFAULTS: dict[str, Any] = {
         "pooling": "mean",  # mean | attention
         "learnable_threshold": True,
     },
-    "pretrain": {  # Novelty G
+    "pretrain": {  # self-supervised pretraining
         "enabled": True,
         "epochs": 50,
         "mask_ratio": 0.5,
@@ -99,7 +99,7 @@ DEFAULTS: dict[str, Any] = {
     },
     "loss": {
         "ranking_margin": 0.8,
-        "proportion": {  # Novelty A
+        "proportion": {  # WHO-proportion constraint
             "enabled": True,
             "weight": 1.0,
             "threshold": 0.10,  # WHO: each component >=10% for biphasic
@@ -128,7 +128,7 @@ DEFAULTS: dict[str, Any] = {
         "gnnexplainer_epochs": 200,
         "save_cell_maps": True,
     },
-    "pseudotime": {  # Novelty C
+    "pseudotime": {  # E->S pseudotime
         "enabled": True,
         "pca_dim": 10,
         "n_centroids": 50,
