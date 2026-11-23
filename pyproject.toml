@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mesograph-fm"
+version = "0.1.0"
+description = "Foundation-model cell graphs for mesothelioma subtyping (refactor of MesoGraph)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary - all rights reserved (see LICENSE)" }
+dependencies = [
+  "numpy", "scipy", "pandas", "scikit-learn", "scikit-image", "pillow", "pyyaml",
+  "torch>=2.1", "torch_geometric>=2.4", "timm>=1.0", "mahotas", "tifffile", "huggingface_hub",
+]
+
+[project.optional-dependencies]
+concepts = ["conch @ git+https://github.com/mahmoodlab/CONCH.git"]
+dev = ["pytest"]
+
+[project.scripts]
+mgfm = "mesograph_fm.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["mesograph_fm*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
