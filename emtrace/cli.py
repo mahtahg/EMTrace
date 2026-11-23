@@ -5,7 +5,7 @@ Commands
 extract   segment-file reading + per-nucleus features -> <work_dir>/features
 graphs    build cell graphs                          -> <work_dir>/graphs
 train     cross-validated training (+ pretraining G, proportion loss A, pseudotime C)
-explain   integrated-gradients attributions for a trained fold
+explain   integrated gradients + GNNExplainer for a trained fold
 demo      make a synthetic dataset and run the full pipeline (no weights needed)
 """
 from __future__ import annotations
@@ -74,11 +74,18 @@ def cmd_explain(a):
     dev = resolve_device(cfg)
     model.load_state_dict(torch.load(fdir / "model.pt", map_location=dev))
     model.to(dev)
-    feats, blocks = explain_cores(model, graphs, norm, dev)
-    feats.to_csv(fdir / "attributions_features.csv")
-    blocks.to_csv(fdir / "attributions_blocks.csv")
-    print(blocks.abs().mean().sort_values(ascending=False))
-
+    ec = cfg["explain"]
+    methods = a.method.split(",") if a.method else ec["methods"]
+    cell_dir = None
+    if ec["save_cell_maps"]:
+        cell_dir = fdir / "explanations"
+        cell_dir.mkdir(exist_ok=True)
+    res = explain_cores(model, graphs, norm, dev, ec["ig_steps"], methods, ec["gnnexplainer_epochs"], cell_dir)
+    for m, (feats, blocks) in res.items():
+        feats.to_csv(fdir / f"attributions_{m}_features.csv")
+        blocks.to_csv(fdir / f"attributions_{m}_blocks.csv")
+        print(f"\n[{m}] mean |attribution| per block")
+        print(blocks.abs().mean().sort_values(ascending=False))
 
 def cmd_demo(a):
     from .extract.pipeline import extract_dataset
@@ -115,6 +122,7 @@ def main(argv=None):
             s.add_argument("--overwrite", action="store_true")
         if name == "explain":
             s.add_argument("--fold", default="rep0_fold0")
+            s.add_argument("--method", default=None, help="ig, gnnexplainer, or ig,gnnexplainer (default: config)")
         if name == "demo":
             s.add_argument("--epochs", type=int, default=20)
             s.add_argument("--n-per-class", dest="n_per_class", type=int, default=6)

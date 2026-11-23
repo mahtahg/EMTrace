@@ -122,6 +122,12 @@ DEFAULTS: dict[str, Any] = {
         "save_node_preds": True,
         "bootstrap": 1000,
     },
+    "explain": {
+        "methods": ["ig", "gnnexplainer"],  # integrated gradients and/or GNNExplainer
+        "ig_steps": 32,
+        "gnnexplainer_epochs": 200,
+        "save_cell_maps": True,
+    },
     "pseudotime": {  # Novelty C
         "enabled": True,
         "pca_dim": 10,

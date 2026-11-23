@@ -17,7 +17,7 @@ features. The original cell-graph backbone and ranking loss come from
 | Normalisation | fitted on **all** cores (test leakage) | fitted per training fold; PCA on deep blocks |
 | Graph | dense adjacency, unit-ambiguous radius | sparse radius graph in µm, edge features |
 | Loss | pairwise ranking (margin 0.8 train / 1.0 eval) | vectorised ranking with one margin **+ A** |
-| Explanations | GNNExplainer | integrated gradients, reported per feature block |
+| Explanations | GNNExplainer | GNNExplainer **and** integrated gradients, per feature block, plus per-cell and per-edge maps |
 | Evaluation | single run | repeats, group-aware splits, bootstrap CIs |
 
 ### Novel components (each toggleable in the config)
@@ -80,7 +80,7 @@ emtrace demo --work-dir runs/demo                 # synthetic data, no weights n
 emtrace extract --config configs/example.yaml     # features -> work_dir/features
 emtrace graphs  --config configs/example.yaml     # graphs   -> work_dir/graphs
 emtrace train   --config configs/example.yaml     # CV training + A/C/G
-emtrace explain --config configs/example.yaml --fold rep0_fold0
+emtrace explain --config configs/example.yaml --fold rep0_fold0   # --method ig | gnnexplainer | ig,gnnexplainer
 ```
 
 Outputs in `work_dir`:
@@ -88,6 +88,7 @@ Outputs in `work_dir`:
 - `core_predictions.csv`: score, sarcomatoid %, pseudotime summary
 - `metrics.json`: AUCs and Kendall τ with bootstrap CIs
 - per fold: model, normaliser, pseudotime tree, node predictions, training history
+- after `explain`: `attributions_{ig,gnnexplainer}_{features,blocks}.csv`, and `explanations/<core>.npz` with per-cell IG, GNNExplainer cell importance and edge mask for overlays
 
 ## Tests
 

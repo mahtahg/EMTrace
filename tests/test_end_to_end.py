@@ -86,7 +86,7 @@ def test_toggles_off(run, tmp_path):
     assert hist["pretrain"] == []
 
 
-def test_explain(run):
+def test_explain(run, tmp_path):
     import pickle
 
     from emtrace.explain.attribution import explain_cores
@@ -98,10 +98,18 @@ def test_explain(run):
     gs = [norm.transform(g) for g in load_graphs(wd / "graphs")[:3]]
     m = EMTraceNet(norm.dim, cfg["model"], gs[0].edge_attr.shape[1])
     m.load_state_dict(torch.load(fdir / "model.pt"))
-    feats, blocks = explain_cores(m, gs, norm, steps=4)
-    assert feats.shape == (3, norm.dim)
-    assert set(blocks.columns) == set(norm.slices)
-
+    res = explain_cores(m, gs, norm, steps=4, methods=("ig", "gnnexplainer"), gnnexp_epochs=5,
+                        node_out_dir=str(tmp_path))
+    for meth in ("ig", "gnnexplainer"):
+        feats, blocks = res[meth]
+        assert feats.shape == (3, norm.dim), meth
+        assert set(blocks.columns) == set(norm.slices), meth
+        assert np.isfinite(feats.values).all(), meth
+    z = np.load(tmp_path / f"{gs[0].core_id}.npz")
+    assert z["gnnexp_cell_importance"].shape == (gs[0].num_nodes,)
+    assert z["gnnexp_edge_mask"].shape == (gs[0].edge_index.shape[1],)
+    assert z["ig_node"].shape == (gs[0].num_nodes,)
+    assert (z["gnnexp_edge_mask"] >= 0).all() and (z["gnnexp_edge_mask"] <= 1).all()
 
 def test_tiny_core_does_not_crash(run, tmp_path):
     """A core with a single nucleus must flow through normalise/predict/pseudotime."""
